@@ -30,29 +30,29 @@ public class AppController {
     }
 
     private void attachListeners() {
-        mainView.inputPanel.simulateButton.addActionListener(e -> runSimulation());
+        mainView.getInputPanel().getSimulateButton().addActionListener(e -> runSimulation());
     }
 
     private void runSimulation() {
         try {
-            String selectedEtf = (String) mainView.inputPanel.etfSimulationSelector.getSelectedItem();
+            String selectedEtf = (String) mainView.getInputPanel().getEtfSimulationSelector().getSelectedItem();
             Map<Integer, Map<Integer, Double>> etfData = allEtfData.get(selectedEtf);
 
-            Object selectedYearItem = mainView.inputPanel.startYearComboBox.getSelectedItem();
+            Object selectedYearItem = mainView.getInputPanel().getStartYearComboBox().getSelectedItem();
             if (selectedYearItem == null) {
                  JOptionPane.showMessageDialog(mainView, "沒有可用的年份進行模擬。", "設定錯誤", JOptionPane.WARNING_MESSAGE);
                  return;
             }
 
             int startYear = (int) selectedYearItem;
-            int startMonth = mainView.inputPanel.startMonthComboBox.getSelectedIndex() + 1;
+            int startMonth = mainView.getInputPanel().getStartMonthComboBox().getSelectedIndex() + 1;
             
-            double initialInvestment = Double.parseDouble(mainView.inputPanel.initialInvestmentField.getText());
-            double monthlyInvestment = Double.parseDouble(mainView.inputPanel.monthlyInvestmentField.getText());
+            double initialInvestment = Double.parseDouble(mainView.getInputPanel().getInitialInvestmentField().getText());
+            double monthlyInvestment = Double.parseDouble(mainView.getInputPanel().getMonthlyInvestmentField().getText());
 
             List<DataPoint> results = SimulationLogic.runSimulation(startYear, startMonth, initialInvestment, monthlyInvestment, etfData);
             
-            mainView.resultsPanel.updateResults(results);
+            mainView.getResultsPanel().updateResults(results);
 
         } catch (Exception ex) {
             ex.printStackTrace();

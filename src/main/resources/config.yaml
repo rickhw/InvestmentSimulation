@@ -1,0 +1,13 @@
+chart:
+  padding: 40
+  labelPadding: 40
+  bottomPadding: 50
+  numberYDivisions: 10
+  maxLabels: 8
+  valueLineColor: "0x0000FF"  # Blue
+  costLineColor: "0xFF0000"   # Red
+  gridColor: "0xD3D3D3"      # Light Gray
+  backgroundColor: "0xFFFFFF" # White
+  textColor: "0x000000"       # Black
+  valueStrokeWidth: 2.0
+  costStrokeWidth: 2.0

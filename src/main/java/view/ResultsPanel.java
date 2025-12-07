@@ -1,6 +1,7 @@
 package view;
 
 import model.DataPoint;
+import lombok.Getter;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -8,6 +9,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 import java.util.List;
 
+@Getter
 public class ResultsPanel extends JSplitPane {
 
     private ChartPanel chartPanel;
@@ -35,7 +37,7 @@ public class ResultsPanel extends JSplitPane {
 
         setTopComponent(chartPanel);
         setBottomComponent(tableScrollPane);
-        setResizeWeight(0.66);
+        setResizeWeight(0.5);
     }
 
     public void updateResults(List<DataPoint> dataPoints) {

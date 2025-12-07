@@ -1,17 +1,21 @@
 package view;
 
+import model.ConfigManager;
 import model.DataPoint;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 public class ChartPanel extends JPanel {
     private List<DataPoint> dataPoints;
+    private Map<String, Object> chartConfig;
 
     public ChartPanel() {
         this.dataPoints = Collections.emptyList();
+        this.chartConfig = ConfigManager.getInstance().getChartConfig();
         setBorder(BorderFactory.createTitledBorder("投資成長圖"));
     }
 
@@ -24,22 +28,25 @@ public class ChartPanel extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         if (dataPoints == null || dataPoints.isEmpty() || dataPoints.size() < 2) {
+            // Clear the chart area if there is no data
+            g.setColor(Color.WHITE);
+            g.fillRect(0, 0, getWidth(), getHeight());
             return;
         }
 
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        int padding = 40;
-        int labelPadding = 40; // Increased padding for labels
-        int bottomPadding = 50; // Extra padding for x-axis labels
+        int padding = (int) chartConfig.get("padding");
+        int labelPadding = (int) chartConfig.get("labelPadding");
+        int bottomPadding = (int) chartConfig.get("bottomPadding");
         int width = getWidth();
         int height = getHeight();
 
-        // Draw white background for the chart area
-        g2.setColor(Color.WHITE);
+        // Draw background for the chart area
+        g2.setColor(Color.decode((String) chartConfig.get("backgroundColor")));
         g2.fillRect(padding + labelPadding, padding, width - (2 * padding) - labelPadding, height - padding - bottomPadding - labelPadding);
-        g2.setColor(Color.BLACK);
+        g2.setColor(Color.decode((String) chartConfig.get("textColor")));
 
         // --- Y-Axis Scaling ---
         double yMin = 0; // Cost and value won't be negative
@@ -48,15 +55,14 @@ public class ChartPanel extends JPanel {
         double yMax = Math.max(yMaxValue, yMaxCost);
 
         // Create hatch marks and grid lines for y-axis.
-        int numberYDivisions = 10;
+        int numberYDivisions = (int) chartConfig.get("numberYDivisions");
         for (int i = 0; i < numberYDivisions + 1; i++) {
             int x0 = padding + labelPadding;
             int x1 = width - padding;
             int y0 = height - ((i * (height - padding - bottomPadding - labelPadding)) / numberYDivisions + padding + bottomPadding);
-            int y1 = y0;
-            g2.setColor(Color.LIGHT_GRAY);
-            g2.drawLine(x0, y0, x1, y1); // grid line
-            g2.setColor(Color.BLACK);
+            g2.setColor(Color.decode((String) chartConfig.get("gridColor")));
+            g2.drawLine(x0, y0, x1, y0); // grid line
+            g2.setColor(Color.decode((String) chartConfig.get("textColor")));
             String yLabel = String.format("%,.2f", yMin + (yMax - yMin) * ((i * 1.0) / numberYDivisions));
             FontMetrics metrics = g2.getFontMetrics();
             int labelWidth = metrics.stringWidth(yLabel);
@@ -70,16 +76,16 @@ public class ChartPanel extends JPanel {
         double xScale = ((double) width - 2 * padding - labelPadding) / (dataPoints.size() - 1);
 
         // --- X-Axis Labels with thinning ---
-        int maxLabels = 8;
+        int maxLabels = (int) chartConfig.get("maxLabels");
         int totalPoints = dataPoints.size();
         int step = (totalPoints <= maxLabels) ? 1 : (int) Math.ceil((double) totalPoints / maxLabels);
 
         for (int i = 0; i < totalPoints; i += step) {
              int x0 = (int)(i * xScale) + padding + labelPadding;
              int y0 = height - padding - bottomPadding;
-             g2.setColor(Color.LIGHT_GRAY);
+             g2.setColor(Color.decode((String) chartConfig.get("gridColor")));
              g2.drawLine(x0, y0, x0, padding); // grid line
-             g2.setColor(Color.BLACK);
+             g2.setColor(Color.decode((String) chartConfig.get("textColor")));
              String xLabel = dataPoints.get(i).getDate();
              FontMetrics metrics = g2.getFontMetrics();
              int labelWidth = metrics.stringWidth(xLabel);
@@ -100,8 +106,8 @@ public class ChartPanel extends JPanel {
         Stroke oldStroke = g2.getStroke();
         
         // --- Draw Value Line (Blue) ---
-        g2.setColor(Color.BLUE);
-        g2.setStroke(new BasicStroke(2f));
+        g2.setColor(Color.decode((String) chartConfig.get("valueLineColor")));
+        g2.setStroke(new BasicStroke(((Double) chartConfig.get("valueStrokeWidth")).floatValue()));
         double yScale = ((double) height - padding - bottomPadding - labelPadding) / (yMax - yMin);
 
         for (int i = 0; i < dataPoints.size() - 1; i++) {
@@ -113,7 +119,8 @@ public class ChartPanel extends JPanel {
         }
 
         // --- Draw Cost Line (Red) ---
-        g2.setColor(Color.RED);
+        g2.setColor(Color.decode((String) chartConfig.get("costLineColor")));
+        g2.setStroke(new BasicStroke(((Double) chartConfig.get("costStrokeWidth")).floatValue()));
         for (int i = 0; i < dataPoints.size() - 1; i++) {
             int x1 = (int) (i * xScale + padding + labelPadding);
             int y1_cost = (int) ((yMax - dataPoints.get(i).getCost()) * yScale + padding);
@@ -125,14 +132,14 @@ public class ChartPanel extends JPanel {
         g2.setStroke(oldStroke);
 
         // --- Draw Legend ---
-        g2.setColor(Color.BLUE);
+        g2.setColor(Color.decode((String) chartConfig.get("valueLineColor")));
         g2.fillRect(width - padding - 80, 10, 10, 10);
-        g2.setColor(Color.BLACK);
+        g2.setColor(Color.decode((String) chartConfig.get("textColor")));
         g2.drawString("總資產", width - padding - 65, 20);
 
-        g2.setColor(Color.RED);
+        g2.setColor(Color.decode((String) chartConfig.get("costLineColor")));
         g2.fillRect(width - padding - 80, 30, 10, 10);
-        g2.setColor(Color.BLACK);
+        g2.setColor(Color.decode((String) chartConfig.get("textColor")));
         g2.drawString("總成本", width - padding - 65, 40);
     }
 }
