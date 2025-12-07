@@ -2,11 +2,13 @@ plugins {
     id 'java'
     id 'application'
     id 'io.freefair.lombok' version '8.6'
+    id 'org.springframework.boot' version '3.2.2'
+    id 'io.spring.dependency-management' version '1.1.4'
 }
 
 group = 'com.example'
 version = '1.0.0'
-sourceCompatibility = '11'
+sourceCompatibility = '17'
 
 repositories {
     mavenCentral()
@@ -14,10 +16,13 @@ repositories {
 
 dependencies {
     implementation 'org.yaml:snakeyaml:2.2'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
 application {
-    mainClass = 'controller.AppController'
+    mainClass = 'com.gtcafe.investion.SimulatorApplication'
 }
 
 // Ensure resources are included in the build

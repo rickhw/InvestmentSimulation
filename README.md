@@ -30,18 +30,34 @@
 
 ## 如何編譯與執行
 
-本專案使用 Gradle 進行建置與管理，並透過 Gradle Wrapper 確保建置環境的一致性，不需手動安裝 Gradle。
+本專案現在支援兩種模式：**Web 模式** 和 **Desktop (Swing) 模式**。
+
+專案使用 Gradle 進行建置與管理，並透過 Gradle Wrapper 確保建置環境的一致性，不需手動安裝 Gradle。
 
 1.  **賦予 Wrapper 執行權限** (若尚未設定):
     ```bash
     chmod +x gradlew
     ```
 
-2.  **執行應用程式**:
-    在專案根目錄下，執行以下指令來建置並啟動程式：
-    ```bash
-    ./gradlew run
-    ```
+2.  **執行應用程式**：
+
+    您可以使用以下指令啟動應用程式。預設會啟動 Web 模式。
+
+    *   **啟動 Web 模式 (預設)**：
+        這會啟動 Spring Boot 內嵌的 Web 伺服器，您可以在瀏覽器中訪問應用程式。
+        ```bash
+        ./gradlew bootRun
+        # 或者明確指定 Web 模式
+        ./gradlew bootRun --args='--app.mode=web'
+        ```
+        啟動後，請在瀏覽器打開 `http://localhost:8080`
+
+    *   **啟動 Desktop (Swing) 模式**：
+        這將會啟動原有的 Swing 桌面應用程式，且**不會**啟動 Web 伺服器。
+        ```bash
+        ./gradlew bootRun --args='--app.mode=desktop'
+        ```
+
     Gradle 會自動處理所有依賴、編譯與執行的任務。
 
 ## 專案結構
